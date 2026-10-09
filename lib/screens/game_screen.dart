@@ -551,7 +551,7 @@ class _GameScreenState extends State<GameScreen>
             ),
             if (solved) ...[
               const SizedBox(height: 6),
-              Text('+${r.points} points',
+              Text('+${r!.points} points',
                   style: Press.label(18, theme: t)),
             ],
             const SizedBox(height: 6),
