@@ -60,7 +60,7 @@ class WordSettings extends ChangeNotifier {
   List<String> playerNames = List.of(defaultNames);
   String themeId = 'classic';
   int tileStyle = 0;
-  bool isPro = false;
+  bool isPro = true; // everything unlocked — no Pro version
   int streak = 0;
   int bestStreak = 0;
   int gamesPlayed = 0;
@@ -137,7 +137,7 @@ class WordSettings extends ChangeNotifier {
     }
     themeId = p.getString(_kTheme) ?? 'classic';
     tileStyle = (p.getInt(_kTileStyle) ?? 0).clamp(0, TileStyles.names.length - 1);
-    isPro = p.getBool(_kIsPro) ?? false;
+    isPro = true; // everything unlocked
     streak = p.getInt(_kStreak) ?? 0;
     bestStreak = p.getInt(_kBestStreak) ?? 0;
     gamesPlayed = p.getInt(_kGames) ?? 0;
