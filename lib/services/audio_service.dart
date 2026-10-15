@@ -18,6 +18,9 @@ import 'package:audioplayers/audioplayers.dart';
 ///   resumes exactly where it left off instead of restarting or dying.
 /// - Every public method catches player errors; audio can never crash the app.
 class WordAudio {
+  /// Per-game pitch character (wordguess): 1.21x. Makes SFX unique.
+  static const double _pitchMul = 1.210;
+
   static const int _rate = 22050;
   final AudioPlayer _sfx = AudioPlayer();
   final AudioPlayer _music = AudioPlayer();
@@ -103,6 +106,8 @@ class WordAudio {
 
   List<double> _tone(double freq, double secs,
       {double freqEnd = 0, double attack = 0.02, double harmonics = 0.25}) {
+    freq *= _pitchMul;
+    freqEnd *= _pitchMul;
     final n = (_rate * secs).round();
     final out = List<double>.filled(n, 0);
     for (int i = 0; i < n; i++) {
@@ -175,12 +180,31 @@ class WordAudio {
       _cache.putIfAbsent(key, () => _wav(build()));
 
   Uint8List _menuBytes() => _clip('music_menu', () {
-        // Warm C – Am – F – G study-hall pad, 16s loop.
+        // F arpeggiated 0 – 3 – 5 – 4, 16s loop. Unique to wordguess.
+        final notes = [174.62, 220.00, 261.63, 220.00, 233.08, 293.67, 349.23, 293.67, 293.67, 349.23, 440.00, 349.23, 261.63, 329.63, 392.00, 329.63];
+        final out = <double>[];
+        final noteLen = 16.0 / notes.length;
+        for (final n in notes) {
+          out.addAll(_tone(n, noteLen * 0.9, harmonics: 0.3));
+          final gap = List<double>.filled((_rate * noteLen * 0.1).round(), 0);
+          out.addAll(gap);
+        }
+        // Soft pad underneath
+        final pad = _padChord([174.62, 220.00, 261.63], 16.0);
+        for (int i = 0; i < out.length && i < pad.length; i++) {
+          out[i] += pad[i] * 0.3;
+        }
+        return out;
+      });
+
+
+  Uint8List _gameBytes() => _clip('music_game', () {
+        // F 0 – 3 – 5 – 4 warm pad, 16s loop. Unique to wordguess.
         final seq = [
-          [261.63, 329.63, 392.0], // C
-          [220.0, 261.63, 329.63], // Am
-          [174.61, 220.0, 261.63], // F
-          [196.0, 246.94, 293.66], // G
+          [174.62, 220.00, 261.63],
+          [233.08, 293.67, 349.23],
+          [293.67, 349.23, 440.00],
+          [261.63, 329.63, 392.00]
         ];
         final out = <double>[];
         for (final chord in seq) {
@@ -189,21 +213,6 @@ class WordAudio {
         return out;
       });
 
-  Uint8List _gameBytes() => _clip('music_game', () {
-        // Quiet typewriter-room waltz: soft bass line + sparse plucks, 12s.
-        final drone = _padChord([130.81, 196.0], 12.0);
-        final plucks = [523.25, 587.33, 659.25, 587.33, 523.25, 440.0, 392.0, 440.0];
-        final n = (_rate * 12).round();
-        final out = List<double>.from(drone);
-        for (int k = 0; k < plucks.length; k++) {
-          final start = (n * k / plucks.length).round();
-          final tone = _tone(plucks[k], 0.45, harmonics: 0.35);
-          for (int i = 0; i < tone.length && start + i < n; i++) {
-            out[start + i] += tone[i] * 0.32;
-          }
-        }
-        return out;
-      });
 
   // ------------------------------------------------------------------ SFX
   Future<void> _play(Uint8List bytes) async {
