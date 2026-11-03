@@ -200,8 +200,10 @@ class _MenuScreenState extends State<MenuScreen> {
                   const SizedBox(height: 14),
                   _NamesCard(theme: t),
                   const SizedBox(height: 14),
-                  _SupportCard(theme: t, store: _store),
-                  const SizedBox(height: 14),
+                  if (defaultTargetPlatform != TargetPlatform.iOS) ...[
+                    _SupportCard(theme: t, store: _store),
+                    const SizedBox(height: 14),
+                  ],
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -554,7 +556,9 @@ class _ThemeCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                '🔒 ${PressThemes.all.length - PressThemes.freeThemeIds.length} more themes in PRO',
+                defaultTargetPlatform == TargetPlatform.iOS
+                    ? '🔒 ${PressThemes.all.length - PressThemes.freeThemeIds.length} more themes'
+                    : '🔒 ${PressThemes.all.length - PressThemes.freeThemeIds.length} more themes in PRO',
                 style: Press.label(12, theme: theme),
               ),
             ),

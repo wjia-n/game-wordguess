@@ -308,8 +308,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                _SectionTitle('Support', t),
-                Container(
+                if (defaultTargetPlatform != TargetPlatform.iOS) ...[
+                  _SectionTitle('Support', t),
+                  Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -370,6 +371,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                 ),
+                ],
                 const SizedBox(height: 10),
                 _SectionTitle('About', t),
                 Text(
