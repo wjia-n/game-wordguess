@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import '../services/audio_service.dart';
@@ -147,10 +148,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   inactiveColor: t.accent.withValues(alpha: 0.3),
                 ),
                 const SizedBox(height: 10),
-                _SectionTitle('Word Guess PRO', t),
+                _SectionTitle(defaultTargetPlatform == TargetPlatform.iOS ? '⭐ Gold Star' : 'Word Guess PRO', t),
                 SettingRow(
                   theme: t,
-                  label: s.isPro ? 'PRO active ✦' : 'Unlock PRO',
+                  label: defaultTargetPlatform == TargetPlatform.iOS ? '⭐ Gold Star' : (s.isPro ? 'PRO active ✦' : 'Unlock PRO'),
                   control: GestureDetector(
                     onTap: () {
                       audio.click();
@@ -174,7 +175,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             color: t.accentLight, width: 2),
                       ),
                       child: Text(
-                        s.isPro ? '✦ PRO' : 'View',
+                        defaultTargetPlatform == TargetPlatform.iOS ? '⭐ Gold Star' : (s.isPro ? '✦ PRO' : 'View'),
                         style: Press.label(13,
                             theme: t,
                             color: s.isPro ? t.bgDeep : t.paper),
